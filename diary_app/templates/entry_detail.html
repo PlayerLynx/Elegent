@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - 我的日记{% endblock %}
+
+{% block content %}
+<div class="entry-detail">
+    <h2>{{ title }}</h2>
+    <p class="entry-date">{{ date }}</p>
+    <div class="entry-content">
+        {{ content|replace('\n', '<br>')|safe }}
+    </div>
+    <div class="actions">
+        <a href="{{ url_for('view_entries') }}">返回日记列表</a>
+         <button class="btn-delete" onclick="confirmDelete('{{ filename }}', '{{ title }}')"> <span class="delete-icon">×</span> 删除</button>
+    </div>
+</div>
+{% endblock %}

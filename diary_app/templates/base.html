@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}我的日记{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<!-- 在base.html的</body>标签前添加优化的JavaScript -->
+<script>
+    function confirmDelete(filename, title) {
+        // 创建自定义确认对话框
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        `;
+        
+        modal.innerHTML = `
+            <div style="background: white; padding: 25px; border-radius: 10px; max-width: 400px; width: 90%; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+                <h3 style="margin-top: 0; color: #e74c3c;">确认删除</h3>
+                <p>确定要删除日记"<strong>${title}</strong>"吗？此操作无法撤销！</p>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                    <button id="cancelDelete" style="padding: 8px 15px; background: #95a5a6; color: white; border: none; border-radius: 4px; cursor: pointer;">取消</button>
+                    <button id="confirmDelete" style="padding: 8px 15px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">确认删除</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // 添加事件监听器
+        document.getElementById('cancelDelete').addEventListener('click', function() {
+            document.body.removeChild(modal);
+        });
+        
+        document.getElementById('confirmDelete').addEventListener('click', function() {
+            window.location.href = `/del_entry/${filename}`;
+        });
+        
+        // 点击模态框背景也可以关闭
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                document.body.removeChild(modal);
+            }
+        });
+    }
+</script>
+<body>
+    <div class="container">
+        <header>
+            <h1>我的日记本</h1>
+            <nav>
+                <a href="{{ url_for('index') }}">写日记</a> |
+                <a href="{{ url_for('view_entries') }}">查看日记</a>
+            </nav>
+        </header>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+        
+        <footer>
+            <p>简单的Flask日记应用</p>
+        </footer>
+    </div>
+     <script>
+        function confirmDelete(filename, title) {
+            if (confirm(`确定要删除日记"${title}"吗？此操作无法撤销！`)) {
+                window.location.href = `/del_entry/${filename}`;
+            }
+        }
+    </script>
+</body>
+</html>

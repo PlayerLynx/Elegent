@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}我的日记列表 - 我的日记{% endblock %}
+
+{% block content %}
+<div class="entries-list">
+    <h2>我的日记</h2>
+    
+    {% if entries %}
+        <div class="entry-cards">
+            {% for entry in entries %}
+            <div class="entry-card">
+                <h3><a href="{{ url_for('view_entry', filename=entry.filename) }}">{{ entry.title }}</a></h3>
+                <p class="entry-date">{{ entry.date }}</p>
+                <p class="entry-preview">{{ entry.preview }}</p>
+                <a href="{{ url_for('view_entry', filename=entry.filename) }}" class="read-more">阅读全文</a>
+                 <button class="btn-delete" onclick="confirmDelete('{{ entry.filename }}', '{{ entry.title }}')"> <span class="delete-icon">×</span> 删除</button>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>还没有日记，<a href="{{ url_for('index') }}">写一篇吧</a>！</p>
+    {% endif %}
+</div>
+{% endblock %}
